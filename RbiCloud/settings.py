@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'vqxkuleq!fk5r4qzyke^150=k%&s)vaz2th!z&bn7mrofmwbc4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -156,4 +156,4 @@ EMAIL_HOST_USER = "doanhtuan14111997@gmail.com"
 EMAIL_HOST_PASSWORD = "anhtuan1997"
 EMAIL_PORT = 587
 # Allow host
-ALLOWED_HOSTS = ['deploycortek.herokuapp.com']
+ALLOWED_HOSTS = ['deploycortek.herokuapp.com','127.0.0.1']
