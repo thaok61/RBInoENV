@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'RbiCloud.wsgi.application'
 DATABASES = {
      'default': {
          'ENGINE': 'django.db.backends.mysql',
-         'NAME': 'rbi_cloud',
-         'USER': 'root',
-         'PASSWORD': 'Vuthao1998',
-         'HOST': 'localhost',
+         'NAME': 'rbi-cloud',
+         'USER': 'zztheblue@rbi-cloud',
+         'PASSWORD': 'Vuducthao1998',
+         'HOST': 'rbi-cloud.mysql.database.azure.com',
          'PORT': '3306',
      }
   }
@@ -155,3 +155,5 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = "doanhtuan14111997@gmail.com"
 EMAIL_HOST_PASSWORD = "anhtuan1997"
 EMAIL_PORT = 587
+# Allow host
+ALLOWED_HOSTS = ['testdeploydjangoducthao.herokuapp.com']
