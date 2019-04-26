@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'vqxkuleq!fk5r4qzyke^150=k%&s)vaz2th!z&bn7mrofmwbc4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -82,12 +82,12 @@ WSGI_APPLICATION = 'RbiCloud.wsgi.application'
 
 DATABASES = {
      'default': {
-         'ENGINE': 'django.db.backends.mysql',
-         'NAME': 'rbi-cloud',
-         'USER': 'zztheblue@rbi-cloud',
-         'PASSWORD': 'Vuducthao1998',
-         'HOST': 'rbi-cloud.mysql.database.azure.com',
-         'PORT': '3306',
+         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+         'NAME': 'd5mgue2m46vdek',
+         'USER': 'enirclgbwhbvud',
+         'PASSWORD': 'e2bf49a6a3d880608f02a8dbde0678fb4dae4a62c021f5bf03ddcde47183eb87',
+         'HOST': 'ec2-54-243-241-62.compute-1.amazonaws.com',
+         'PORT': '5432',
      }
   }
 
