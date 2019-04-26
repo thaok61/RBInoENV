@@ -3056,7 +3056,7 @@ def Email_Message_sent(request):
     return render(request, 'Messages/Messages_Sent.html', {'page':'messagesSent', 'datacontent':datacontent,'info':request.session,'noti':noti,'countnoti':countnoti,'count':count,'countveri':countveri})
 
 ################# Help #################
-def Help(requset):
+def Help(request):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
     faci = models.Facility.objects.get(siteid=siteid)
     countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
@@ -3064,7 +3064,7 @@ def Help(requset):
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=requset.session['id'])[0].email),
                                           Q(Is_see=0)).count()
-    return render(requset,'help/help.html',{'page':'home','info':requset.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
+    return render(request,'help/help.html',{'page':'home','info':requset.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_Usermanual_Citizen(request):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
     faci = models.Facility.objects.get(siteid=siteid)
