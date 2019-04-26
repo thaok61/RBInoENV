@@ -3062,7 +3062,7 @@ def Help(request):
     countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=requset.session['id'])
     countnoti = noti.filter(state=0).count()
-    count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=requset.session['id'])[0].email),
+    count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/help.html',{'page':'home','info':requset.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_Usermanual_Citizen(request):
