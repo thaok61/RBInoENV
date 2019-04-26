@@ -82,12 +82,12 @@ WSGI_APPLICATION = 'RbiCloud.wsgi.application'
 
 DATABASES = {
      'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': 'd5mgue2m46vdek',
-         'USER': 'enirclgbwhbvud',
-         'PASSWORD': 'e2bf49a6a3d880608f02a8dbde0678fb4dae4a62c021f5bf03ddcde47183eb87',
-         'HOST': 'ec2-54-243-241-62.compute-1.amazonaws.com',
-         'PORT': '5432',
+         'ENGINE': 'django.db.backends.mysql',
+         'NAME': 'heroku_e9e48b6c034eed0',
+         'USER': 'bb439d017ee1d9',
+         'PASSWORD': 'd4c3a78a',
+         'HOST': 'us-cdbr-iron-east-02.cleardb.net',
+         'PORT': '3306',
      }
   }
 
