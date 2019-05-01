@@ -2916,6 +2916,7 @@ def logout(request):
 
 ################## Forum Dien Dan ###################
 def base_forum(request):
+    countveri = 0
     if request.session.has_key('id'):
         if 'btnsend' in request.POST:
             xtitle=request.POST.get('txttitle')
@@ -2936,14 +2937,15 @@ def base_forum(request):
             posts['views']=dataposts.views
             posts['reply']=models.ZComment.objects.all().filter(id_posts=dataposts.id).count()
             mang.append(posts)
-        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-        faci = models.Facility.objects.get(siteid=siteid)
-        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+        if request.session.has_key('kind') == "factory":
+            siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+            faci = models.Facility.objects.get(siteid=siteid)
+            countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
         noti=models.ZNotification.objects.all().filter(id_user=request.session['id'])
         countnoti=noti.filter(state=0).count()
         count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
-        return render(request,'BaseUI/BaseForum/forumhome.html',{'data':mang, 'noti':noti, 'countnoti':countnoti,'countveri':countveri,'countveri':countveri,'info':request.session})
+        return render(request,'BaseUI/BaseForum/forumhome.html',{'data':mang, 'noti':noti, 'countnoti':countnoti,'info':request.session,'countveri':countveri})
     else:
         return redirect('home')
 def posts_forum(request,postID):
@@ -2951,6 +2953,7 @@ def posts_forum(request,postID):
     a.views+=1
     a.save()
     nameuserpost=models.ZUser.objects.all().filter(id=a.id_user)[0].name
+    countveri = 0
     if request.session['id']==a.id_user:
         noti=models.ZNotification.objects.all().filter(link=postID)
         for notifi in noti:
@@ -2974,25 +2977,24 @@ def posts_forum(request,postID):
         cmt['name']=models.ZUser.objects.all().filter(id=data.id_user)[0].name
         cmt['content']=data.content
         datacmt.append(cmt)#mang chua Du lieu cac comment
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    if request.session.kind == 'factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
-    return render(request,'BaseUI/BaseForum/forumposts.html',{'data':a,'nameuserpost':nameuserpost,'datacmt':datacmt,'session':request.session,'noti':noti,'countveri':countveri,'countnoti':countnoti,'info':request.session,'countveri':countveri})
+    return render(request,'BaseUI/BaseForum/forumposts.html',{'data':a,'nameuserpost':nameuserpost,'datacmt':datacmt,'session':request.session,'noti':noti,'countnoti':countnoti,'info':request.session,'countveri':countveri})
 
 ################## Tin nhan Email ###################
 def MessagesInbox(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     datacontent = models.Emailto.objects.filter(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email)
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
+    countveri = 0
     try:
         if 'post' in request.POST:
             data={}
@@ -3014,6 +3016,10 @@ def MessagesInbox(request):
                     email1.delete()
                     return redirect('messagesInbox')
         acti = models.Emailto.objects.filter(Emailt = request.session['email'])
+        if request.session.has_key('kind')=='factory':
+            siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+            faci = models.Facility.objects.get(siteid=siteid)
+            countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
         for acti in acti:
             acti.Is_see=1
             acti.save()
@@ -3022,14 +3028,12 @@ def MessagesInbox(request):
         raise Http404
     return render(request,'Messages/Messages_Inbox.html',{'page':'messagesInbox','datacontent':datacontent,'info':request.session,'noti':noti,'countnoti':countnoti,'count':count,'countveri':countveri})
 def Email_Message_sent(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     datacontent = models.Emailsent.objects.filter(Emails=models.ZUser.objects.filter(id=request.session['id'])[0].email)
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
+    countveri = 0
     try:
         if 'post' in request.POST:
             data = {}
@@ -3050,6 +3054,10 @@ def Email_Message_sent(request):
                     email1 = models.Emailsent.objects.get(id=data1.id)
                     email1.delete()
                     return redirect('messagesSent')
+        if request.session.has_key('kind')=='factory':
+            siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+            faci = models.Facility.objects.get(siteid=siteid)
+            countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     except Exception as e:
         print(e)
         raise Http404
@@ -3057,90 +3065,110 @@ def Email_Message_sent(request):
 
 ################# Help #################
 def Help(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+            siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+            faci = models.Facility.objects.get(siteid=siteid)
+            countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/help.html',{'page':'home','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_Usermanual_Citizen(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request, 'help/User_Manual/help_Citizen.html',{'page':'userManual','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_Usermanual_Business(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)            
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request, 'help/User_Manual/help_Business.html',{'page':'userManual','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_Usermanual_Manager(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request, 'help/User_Manual/help_Manager.html',{'page':'userManual','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_AccountManagement_LoginPass(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/Account_Management/Login_and_Password.html',{'page':'accountManager','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_AccountManagement_PerInfo(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/Account_Management/Personal_Information.html',{'page':'accountManager','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_AccountManagement_AccessDownload(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/Account_Management/Access_and_Download_Information.html',{'page':'accountManager','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Help_AccountManagement_Notification(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/Account_Management/Notification.html',{'page':'accountManager','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Policies_Reports(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
                                           Q(Is_see=0)).count()
     return render(request,'help/Policies_Reports.html',{'page':'policiesReports','info':request.session,'count':count,'noti':noti,'countnoti':countnoti,'countveri':countveri})
 def Private_Safe(request):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
+    countveri = 0
+    if request.session.has_key('kind')=='factory':
+        siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+        faci = models.Facility.objects.get(siteid=siteid)
+        countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email),
