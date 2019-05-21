@@ -4,6 +4,12 @@
 {% block listeq %}{% url 'equipmentDisplay' facilityID %}{% endblock %}
 {% block neweq %}{% url 'equipmentNew' facilityID %}{% endblock %}
 {% block backfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block listfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block newfaci %}{% url 'facilitiesNew' siteID %}{% endblock %}
+{% block design %}{% url 'designcodeDisplay' siteID %}{% endblock %}
+{% block manu %}{% url 'manufactureDisplay' siteID %}{% endblock %}
+{% block uploadInsp %}{% url 'upload' siteID %}{% endblock %}
+{% block uploadPlant %}{% url 'uploadPlan' siteID %}{% endblock %}
 <!--------------- END BLOCK -------------->
 
 {% block data-content %}
@@ -67,6 +73,7 @@
             <div>
                 <button type="submit" name="_edit" class="btn btn-primary"><i class="fa fa-pencil">&emsp;Edit Selected</i></button>
                 <button type="submit" name="_delete" class="btn btn-warning" id="sub" onclick="Sub()"><i class="fa fa-trash-o">&emsp;Delete Selected</i></button>
+                <button type="submit" name="_new" class="btn btn-primary"><i class="fa fa-pencil">&emsp;New Equipment</i></button>
             </div>
 
         </div>

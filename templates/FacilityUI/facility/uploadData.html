@@ -1,9 +1,14 @@
-{% extends 'BaseUI/BaseFacility/baseUpload.html' %}
+{% extends 'BaseUI/BaseFacility/baseFacility.html' %}
 
 {% load staticfiles %}
 
 <!------------ BLOCK MENU--------->
-{% block backfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block listfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block newfaci %}{% url 'facilitiesNew' siteID %}{% endblock %}
+{% block design %}{% url 'designcodeDisplay' siteID %}{% endblock %}
+{% block manu %}{% url 'manufactureDisplay' siteID %}{% endblock %}
+{% block uploadInsp %}{% url 'upload' siteID %}{% endblock %}
+{% block uploadPlant %}{% url 'uploadPlan' siteID %}{% endblock %}
 <!-----------END BLOCK------------>
 
 {% block data-content %}

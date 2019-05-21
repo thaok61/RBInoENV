@@ -12,6 +12,7 @@
     <form method="post" style="padding-top: 90px;padding-bottom: 90px">
         {% csrf_token %}
         {% for veri in veri %}
+            {% for faci in faci %}
 
         <div class="container" style="width: 1000px;background-color: #d9d9d9">
             <header>
@@ -34,7 +35,7 @@
                             <td>&emsp;<a>{{ veri.proposal }}</a></td>
                             <td>&emsp;<a>{{ veri.com }}</a></td>
                             <td>&emsp;<a>{{ veri.eq }}</a></td>
-                            <td>&emsp;<a>{{ faci.facilityname }}</a></td>
+                            <td>&emsp;<a>{% if veri.facility == faci.facilityid %}{{ faci.facilityname }}{% endif %}</a></td>
                         </tr>
                     </table>
                 </div>
@@ -68,6 +69,7 @@
             </footer>
         </div>
             <br>
+            {% endfor %}
         {% endfor %}
     </form>
 {% endblock %}

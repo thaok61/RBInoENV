@@ -74,15 +74,12 @@ def handler404(request):
 
 ################ Business UI Control ###################
 def ListFacilities(request, siteID):
-    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    countveri = models.Verification.objects.filter(facility=faci.facilityid).filter(Is_active=0).count()
     count = models.Emailto.objects.filter(Q(Emailt=models.ZUser.objects.filter(id=request.session['id'])[0].email), Q(Is_see=0)).count()
     noti = models.ZNotification.objects.all().filter(id_user=request.session['id'])
     countnoti = noti.filter(state=0).count()
     try:
         risk = []
-
+        
         data= models.Facility.objects.filter(siteid= siteID)
         for a in data:
             dataF = {}
@@ -110,9 +107,11 @@ def ListFacilities(request, siteID):
                 if(request.POST.get('%d' %a.facilityid)):
                     a.delete()
             return redirect('facilitiesDisplay', siteID)
+        if '_new' in request.POST:
+            return redirect('facilitiesNew', siteID=siteID)
     except:
         raise Http404
-    return render(request, 'FacilityUI/facility/facilityListDisplay.html', {'page':'listFacility','obj': users,'siteID':siteID,'count':count,'info':request.session,'noti':noti,'countnoti':countnoti,'countveri':countveri})
+    return render(request, 'FacilityUI/facility/facilityListDisplay.html', {'page':'listFacility','obj': users,'siteID':siteID,'count':count,'info':request.session,'noti':noti,'countnoti':countnoti})
 def NewFacilities(request,siteID):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
     faci = models.Facility.objects.get(siteid=siteid)
@@ -124,7 +123,7 @@ def NewFacilities(request,siteID):
     try:
         error = {}
         data = {}
-        site = models.Sites.objects.get(siteid= siteID)
+        site = models.Sites.objects.filter(siteid= siteID)
         if request.method == 'POST':
             data['facilityname'] = request.POST.get('FacilityName')
             data['manageFactor'] = request.POST.get('ManagementSystemFactor')
@@ -210,6 +209,8 @@ def ListDesignCode(request, siteID):
                 if request.POST.get('%d' %a.designcodeid):
                     a.delete()
             return redirect('designcodeDisplay', siteID= siteID)
+        if '_new' in request.POST:
+            return redirect('designcodeNew', siteID=siteID)
     except:
         raise Http404
     return render(request, 'FacilityUI/design_code/designcodeListDisplay.html', {'page':'listDesign','obj':obj, 'siteID':siteID,'info':request.session,'noti':noti,'countnoti':countnoti,'count':count,'countveri':countveri})
@@ -292,6 +293,8 @@ def ListManufacture(request, siteID):
                 if request.POST.get('%d' %a.manufacturerid):
                     a.delete()
             return redirect('manufactureDisplay', siteID= siteID)
+        if '_new' in request.POST:
+            return redirect('manufactureNew',siteID=siteID)
     except:
         raise Http404
     return render(request, 'FacilityUI/manufacture/manufactureListDisplay.html', {'page':'listManu','obj':obj, 'siteID':siteID,'noti':noti,'countnoti':countnoti,'count':count,'countveri':countveri})
@@ -371,6 +374,8 @@ def ListEquipment(request, facilityID):
                 if request.POST.get('%d' %a.equipmentid):
                     a.delete()
             return redirect('equipmentDisplay' , facilityID= facilityID)
+        if '_new' in request.POST:
+            return redirect('equipmentNew', facilityID=facilityID)
     except Exception as e:
         print(e)
         raise Http404
@@ -490,6 +495,8 @@ def ListComponent(request, equipmentID):
                 if request.POST.get('%d' %a.componentid):
                     a.delete()
             return  redirect('componentDisplay', equipmentID= equipmentID)
+        if '_new' in request.POST:
+            return redirect('componentNew', equipmentID=equipmentID)
     except:
         raise Http404
     return render(request, 'FacilityUI/component/componentListDisplay.html', {'page':'listComp','obj':obj, 'equipmentID':equipmentID, 'facilityID': eq.facilityid_id,'eq':eq,'faci':faci,'info':request.session,'noti':noti,'countnoti':countnoti,'count':count,'countveri':countveri})
@@ -649,6 +656,8 @@ def ListProposal(request, componentID):
                             return redirect('tankEdit', proposalID= a.id)
                         else:
                             return redirect('prosalEdit', proposalID= a.id)
+            elif '_new' in request.POST:
+                return redirect('proposalNew', componentID=componentID)
             else:
                 for a in rwass:
                     if request.POST.get('%d' %a.id):
@@ -2840,7 +2849,7 @@ def upload(request, siteID):
     except:
         raise Http404
 
-    return render(request, 'FacilityUI/facility/uploadData.html', {'siteID': siteID, 'showcontent': showcontent,'noti':noti,'countnoti':countnoti,'count':count,'info':request.session,'countveri':countveri})
+    return render(request, 'FacilityUI/facility/uploadData.html', {'siteID': siteID, 'showcontent': showcontent,'noti':noti,'countnoti':countnoti,'count':count,'info':request.session,'countveri':countveri, 'page':'uploadPlan'})
 def uploadInspPlan(request, siteID):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
     faci = models.Facility.objects.get(siteid=siteid)
@@ -2865,7 +2874,7 @@ def uploadInspPlan(request, siteID):
     except Exception as e:
         print(e)
         raise Http404
-    return render(request, 'FacilityUI/facility/uploadData.html' ,{'siteID': siteID, 'showcontent': showcontent,'noti':noti,'countnoti':countnoti,'count':count,'info':request.session,'countveri':countveri})
+    return render(request, 'FacilityUI/facility/uploadData.html' ,{'siteID': siteID, 'showcontent': showcontent,'noti':noti,'countnoti':countnoti,'count':count,'info':request.session,'countveri':countveri, 'page':'uploadHistory'})
 
 ############### Dang Nhap Dang Suat #################
 def signin(request):
@@ -4520,16 +4529,17 @@ def VeriFullyConsequenceMana(request, proposalID):
         raise Http404
 def VerificationHome(request):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.get(siteid=siteid)
-    veri = models.Verification.objects.filter(facility=faci.facilityid)
-    ct = models.VeriContent.objects.all()
+    faci = models.Facility.objects.filter(siteid=siteid)
     array = []
-    for verifi in veri:
-        print(verifi.id)
-        cont = models.VeriContent.objects.filter(Verification=verifi.id)
-        array.append(cont)
-        for con in cont:
-            print(con.Verification.id)
+    for a in faci:
+        veri = models.Verification.objects.filter(facility=a.facilityid)
+        ct = models.VeriContent.objects.all()
+        for verifi in veri:
+            print(verifi.id)
+            cont = models.VeriContent.objects.filter(Verification=verifi.id)
+            array.append(cont)
+            for con in cont:
+                print(con.Verification.id)
     if '_check' in request.POST:
         veriCheck_ID = request.POST.get('_check')
         return redirect('VerificationCheck',verifiID=veriCheck_ID)
