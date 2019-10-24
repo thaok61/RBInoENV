@@ -8,10 +8,9 @@
 
 {% block title %}Verification_requirments{% endblock %}
 
-{% block content %}
-    <form method="post" style="padding-top: 90px;padding-bottom: 90px">
-        {% csrf_token %}
-        {% for faci in faci %}
-            <a href="{% url 'VerificationHome' faci.facilityid %}">{{ faci.facilityname }}</a><br>
+{% block vertical %}
+        <a class="active">Verification</a>
+        {% for facility in listfaci %}
+            <a href="{% url 'VerificationHome' facility.facilityid %}" class="{% if facility.facilityname == faci.facilityname %}activeLink{% endif %}"><i class="fa fa-list">&emsp;{{ facility.facilityname }}</i></a>
         {% endfor %}
-        {% endblock %}
+{% endblock %}

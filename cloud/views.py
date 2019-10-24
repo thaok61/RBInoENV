@@ -4415,8 +4415,11 @@ def VeriFullyConsequenceMana(request, proposalID):
             return render(request, 'ManagerUI/verification_requirments/fullyNormalConsequenceVericification.html', {'page':'fullyConse', 'data': data, 'proposalID':proposalID, 'ass':rwAss,'count':count,'noti':noti,'countnoti':countnoti,'info':request.session})
     except:
         raise Http404
-def VerificationHome(request,faciid):
-    faci = models.Facility.objects.filter(facilityid=faciid)
+def VerificationHome(request, faciid):
+    siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
+    listfaci = models.Facility.objects.filter(siteid=siteid)
+    faci = models.Facility.objects.filter(facilityid = faciid)
+    cont = 0
     array = []
     for a in faci:
         veri = models.Verification.objects.filter(facility=a.facilityid)
@@ -4431,12 +4434,12 @@ def VerificationHome(request,faciid):
         veriCheck_ID = request.POST.get('_check')
         return redirect('VerificationCheck', verifiID=veriCheck_ID)
     return render(request, 'ManagerUI/verification_requirments/VerificationContent.html',
-                  {'veri': veri, 'faci': faci, 'cont': cont, 'ct': ct, 'arr': array})
+                  {'veri': veri, 'faci': faci, 'cont': cont, 'ct': ct, 'arr': array, 'listfaci':listfaci})
 def VerificationNumberFacilities(request):
     siteid = models.Sites.objects.filter(userID_id=request.session['id'])[0].siteid
-    faci = models.Facility.objects.filter(siteid=siteid)
+    listfaci = models.Facility.objects.filter(siteid=siteid)
     array = []
-    return render(request,'ManagerUI/verification_requirments/VerificationNumberFacilities.html',{'faci':faci})
+    return render(request,'ManagerUI/verification_requirments/VerificationNumberFacilities.html',{'listfaci':listfaci})
 def VerificationCheck(request, verifiID):
     veri = models.Verification.objects.get(id = verifiID)
     veri.Is_active = 1
